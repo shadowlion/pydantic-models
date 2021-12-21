@@ -24,7 +24,7 @@ class CreditCard(BaseModel):
     @validator("name")
     def validate_name(cls, name: str) -> str:
         """Checks the name is at least 2 characters; no numbers in the name"""
-        if name.isalnum() or len(name) < 2:
+        if len(name.strip()) < 2:
             raise ValueError("Names must be at least 2 letters.")
         return name
 
@@ -43,7 +43,11 @@ class CreditCard(BaseModel):
     def validate_year(cls, year: str) -> str:
         """Checks that the input year is a year in the future, including this year."""
         current_year = date.today().year
-        if not year.isdigit() or current_year <= int(year) <= current_year + 10:
+        if (
+            not year.isdigit() or
+            int(year) < current_year or
+            int(year) > (current_year + 10)
+        ):
             raise ValueError(
                 f"Year must be between {current_year} and {current_year + 10}"
             )
