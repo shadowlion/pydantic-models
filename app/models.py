@@ -1,7 +1,9 @@
 from datetime import date
+from typing import Union
+
 from pydantic import BaseModel, validator
 
-from app.helpers import validate_aba_routing_number
+from app.helpers import spend_pool, validate_aba_routing_number
 
 
 class CreditCard(BaseModel):
@@ -79,9 +81,9 @@ class CreditCard(BaseModel):
         """
         current_year = date.today().year
         if (
-            not year.isdigit() or
-            int(year) < current_year or
-            int(year) > (current_year + 10)
+            not year.isdigit()
+            or int(year) < current_year
+            or int(year) > (current_year + 10)
         ):
             raise ValueError(
                 f"Year must be between {current_year} and {current_year + 10}"
@@ -157,8 +159,12 @@ class Accreditation(BaseModel):
     net worth and annual income.
     """
 
-    annual_income: int
-    net_worth: int
+    annual_income: Union[int, float] = 0
+    net_worth: Union[int, float] = 0
+
+    @property
+    def accredited(cls) -> bool:
+        return cls.annual_income >= 200_000 and cls.net_worth >= 1_000_000
 
     @property
     def spend_capacity(cls) -> int:
@@ -166,7 +172,7 @@ class Accreditation(BaseModel):
         Calculates how much someone can invest on equity crowdfunding platforms using
         the SEC's formula.
         """
-        return 2200
+        return spend_pool(cls.annual_income, cls.net_worth)
 
     @validator("annual_income")
     def validate_annual_income(cls, num: int) -> int:
