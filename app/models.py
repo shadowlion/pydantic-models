@@ -3,7 +3,12 @@ from typing import Union
 
 from pydantic import BaseModel, validator
 
-from app.helpers import spend_pool, validate_aba_routing_number
+from app.helpers import (
+    CreditCardBrand,
+    credit_card_brand,
+    spend_pool,
+    validate_aba_routing_number,
+)
 
 
 class CreditCard(BaseModel):
@@ -22,13 +27,13 @@ class CreditCard(BaseModel):
     cvv: str
 
     @property
-    def brand(cls) -> str:
+    def brand(cls) -> CreditCardBrand:
         """Checks the credit card number, returns the brand it's from.
 
         Returns:
             str: credit card company (abbr)
         """
-        pass
+        return credit_card_brand(cls.number)
 
     @validator("name")
     def validate_name(cls, name: str) -> str:
@@ -51,7 +56,11 @@ class CreditCard(BaseModel):
             - Must be a number string.
             - Must be a 16-digit number.
         """
-        assert number.isdigit() and len(number) == 16, "Must be a 16 digit number."
+        assert number.strip().isdigit(), "Must be a number."
+        assert (
+            len(number.strip()) == 16
+            or credit_card_brand(number) == CreditCardBrand.AMERICAN_EXPRESS
+        ), "Must be a 16 digit number OR 15 digits if using Amex."
         return number
 
     @validator("month")

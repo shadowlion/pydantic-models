@@ -1,3 +1,5 @@
+import re
+from enum import Enum
 from typing import Any, Optional, Protocol, Union
 
 import requests
@@ -77,3 +79,39 @@ def spend_pool(
         return max(minimum, choice * 0.05)
     else:
         return maximum if choice * 0.1 >= maximum else choice * 0.1
+
+
+class CreditCardBrand(str, Enum):
+    VISA = "VI"
+    MASTERCARD = "MC"
+    DISCOVER = "DI"
+    AMERICAN_EXPRESS = "AM"
+
+
+def credit_card_brand(n: str) -> CreditCardBrand:
+    """Determines which company the credit card came from.
+
+    Args:
+        `n` (str): cardholder number
+
+    Raises:
+        ValueError: Invalid credit card number (doesn't match any supplied regex)
+
+    Returns:
+        str: One of the following: "VI", "DI", "MC", "AM"
+    """
+    visa_regex = r"^4[0-9]{12}(?:[0-9]{3})?$"
+    discover_regex = r"^6(?:011|5[0-9]{2})[0-9]{12}$"
+    mastercard_regex = r"^(?:5[1-5][0-9]{2}|222[1-9]|22[3-9][0-9]|2[3-6][0-9]{2}|27[01][0-9]|2720)[0-9]{12}$"  # noqa E501
+    amex_regex = r"^3[47][0-9]{13}$"
+
+    if re.match(visa_regex, n):
+        return CreditCardBrand.VISA
+    elif re.match(discover_regex, n):
+        return CreditCardBrand.DISCOVER
+    elif re.match(mastercard_regex, n):
+        return CreditCardBrand.MASTERCARD
+    elif re.match(amex_regex, n):
+        return CreditCardBrand.AMERICAN_EXPRESS
+    else:
+        raise ValueError("Invalid credit card number.")

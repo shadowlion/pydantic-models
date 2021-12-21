@@ -1,5 +1,4 @@
 import pytest
-
 from pydantic import ValidationError
 
 from app.models import AchAccount
@@ -34,10 +33,7 @@ def test_model_routing_number_input_only():
 
 def test_model_account_number_two_digits():
     with pytest.raises(ValidationError):
-        AchAccount(
-            account="12",
-            routing="021000021"
-        )
+        AchAccount(account="12", routing="021000021")
 
 
 def test_model_account_number_three_digits():
@@ -80,14 +76,14 @@ def test_model_routing_number_nine_digits():
         "011401533",
         "091000019",
     )
-    for i, r in enumerate(routing_numbers):
+    for num in routing_numbers:
         ach = AchAccount(
             account="123",
-            routing=r,
+            routing=num,
         )
         assert len(ach.routing) == 9
         assert ach.account == "123"
-        assert ach.routing == routing_numbers[i]
+        assert ach.routing == num
 
 
 def test_model_routing_number_ten_digits():
