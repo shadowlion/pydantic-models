@@ -1,2 +1,3 @@
-# pydantic-models
-Simple exercise for testing/validating certain models
+# Pydantic Models
+
+> Simple exercise for testing/validating certain models
