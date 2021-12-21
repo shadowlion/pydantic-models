@@ -8,8 +8,10 @@ from app.helpers import spend_pool, validate_aba_routing_number
 
 class CreditCard(BaseModel):
     """
-    Credit Card pydantic model. Ccurrently accepts only the following:
-    VISA, DISCOVER, MASTERCARD, and AMEX.
+    Credit Card pydantic model.
+
+    Currently accepts only the following: VISA, DISCOVER, MASTERCARD, and AMEX.
+
     However, we also invalidate AMEX from the final solution.
     """
 
@@ -32,79 +34,60 @@ class CreditCard(BaseModel):
     def validate_name(cls, name: str) -> str:
         """Validates cardholder name
 
-        Args:
-            name (str): cardholder name
-
-        Raises:
-            ValueError: Name length must be greater than 1 character
-
-        Returns:
-            str: cardholder name
+        Conditions:
+            - Must be an alpha string.
+            - Must be at least 2 letters long.
         """
-        if len(name.strip()) < 2:
-            raise ValueError("Names must be at least 2 letters.")
+        assert (
+            name.isalpha() and len(name.strip()) > 1
+        ), "Names must be at least 2 letters long."
         return name
 
     @validator("number")
     def validate_number(cls, number: str) -> str:
-        pass
+        """Validates the cardholder number
+
+        Conditions:
+            - Must be a number string.
+            - Must be a 16-digit number.
+        """
+        assert number.isdigit() and len(number) == 16, "Must be a 16 digit number."
+        return number
 
     @validator("month")
     def validate_month(cls, month: str) -> str:
         """Validate expiry month
 
-        Args:
-            month (str): expiry month
-
-        Raises:
-            ValueError: Must be between 1 and 12
-
-        Returns:
-            str: expiry month
+        Conditions:
+            - Must be a number string.
+            - Must be between 1 and 12.
         """
-        if not month.isdigit() or int(month) < 1 or int(month) > 12:
-            raise ValueError("Must choose a number between 1 and 12.")
+        assert month.isdigit() and 1 <= int(month) <= 12, "Must be between 1 and 12."
         return month
 
     @validator("year")
     def validate_year(cls, year: str) -> str:
         """Validate expiry year
 
-        Args:
-            year (str): expiry year
-
-        Raises:
-            ValueError: Year must be between {current year} and {current year + 10}
-
-        Returns:
-            str: expiry year
+        Conditions:
+            - Must be a number string.
+            - Must be between this year and ten years to date.
         """
         current_year = date.today().year
-        if (
-            not year.isdigit()
-            or int(year) < current_year
-            or int(year) > (current_year + 10)
-        ):
-            raise ValueError(
-                f"Year must be between {current_year} and {current_year + 10}"
-            )
+        assert (
+            year.isdigit() and current_year <= int(year) <= current_year + 10
+        ), f"Year must be between {current_year} and {current_year + 10}."
         return year
 
     @validator("cvv")
     def validate_cvv(cls, cvv: str) -> str:
         """Validate cvv number
 
-        Args:
-            cvv (str): cvv number
-
-        Raises:
-            ValueError: Must be a valid 3-digit number
-
-        Returns:
-            str: cvv number
+        Conditions:
+            - Must be a number string.
+            - Must be at least 3 digits.
         """
-        if not cvv.isdigit() or len(cvv) != 3:
-            raise ValueError("Must be a valid 3-digit number.")
+        assert cvv.isdigit() and len(cvv) == 3, "Must be a 3 digit number."
         return cvv
 
 
@@ -118,35 +101,24 @@ class AchAccount(BaseModel):
     def validate_account_number(cls, num: str) -> str:
         """Validate the account number input.
 
-        Args:
-            num (str): account number
-
-        Raises:
-            ValueError: Account numbers must be between 3 and 17 digits
-
-        Returns:
-            str: account number
+        Conditions:
+            - Must be a number string.
+            - Must be between 3 and 17 digits.
         """
-        if not num.isdigit() or len(num) < 3 or len(num) > 17:
-            raise ValueError("Account numbers must be between 3 and 17 digits.")
+        assert num.isdigit() and 3 <= len(num) <= 17, "Must be between 3 and 17 digits."
         return num
 
     @validator("routing")
     def validate_routing_number(cls, num: str) -> str:
         """Validate the routing number input.
 
-        Args:
-            num (str): routing number
-
-        Raises:
-            ValueError: Routing numbers must be 9 digits
-            ValueError: Routing number is invalid
-
-        Returns:
-            str: routing number
+        Conditions:
+            - Must be a number string.
+            - Must be exactly 9 digits.
         """
-        if not num.isdigit() or len(num) != 9:
-            raise ValueError("Routing numbers must be 9 digits.")
+        assert (
+            num.isdigit() and len(num) == 9
+        ), "Accepted routing numbers must be exactly 9 digits."
         r = validate_aba_routing_number(num)
         if r.get("statusCode") == "215":
             raise ValueError("Invalid routing number")
@@ -165,12 +137,10 @@ class Accreditation(BaseModel):
     @property
     def accredited(cls) -> bool:
         """Check if the investor is accredited.
-        According to the SEC, an accredited investor is someone who:
-        - Makes at least $200,000 annually, AND
-        - Has a net worth of at least $1M
 
-        Returns:
-            bool
+        Conditions:
+            - Annual income is at least $200k
+            - Net worth is at least $1M
         """
         return cls.annual_income >= 200_000 and cls.net_worth >= 1_000_000
 
@@ -186,32 +156,18 @@ class Accreditation(BaseModel):
     def validate_annual_income(cls, num: int) -> int:
         """Validate annual income
 
-        Args:
-            num (int): annual income
-
-        Raises:
-            ValueError: Must be greater than 0
-
-        Returns:
-            int: annual income
+        Conditions:
+            - Number must be greater than or equal to zero.
         """
-        if num < 0:
-            raise ValueError("Must be greater than zero.")
+        assert num >= 0, "Must be greater than or equal to zero."
         return num
 
     @validator("net_worth")
     def validate_net_worth(cls, num: int) -> int:
         """Validate net worth
 
-        Args:
-            num (int): net worth
-
-        Raises:
-            ValueError: Must be greater than 0
-
-        Returns:
-            int: net worth
+        Conditions:
+            - Number must be greater than or equal to zero.
         """
-        if num < 0:
-            raise ValueError("Must be greater than zero.")
+        assert num >= 0, "Must be greater than or equal to zero."
         return num
