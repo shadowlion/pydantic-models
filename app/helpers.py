@@ -19,12 +19,33 @@ class APIResponse(Protocol):
 
 
 def api_call(method: str, endpoint: str, payload: Any = None):
+    """Runs an API call to Transact API
+
+    Args:
+        method (str): HTTP method
+        endpoint (str): url endpoint (see documentation)
+        payload (Dict[str, Union[str, int, float]], optional): Data payload.
+        Defaults to None.
+
+    Returns:
+        [Any]: JSON response from the Transact API servers
+    """
     url = "https://api.norcapsecurities.com/tapiv3/index.php/v3/"
     r = requests.request(method, url + endpoint, data=payload)
     return r.json()
 
 
 def validate_aba_routing_number(routing_number: str) -> APIResponse:
+    """Validates an ABA routing number via Transact API.
+
+    Reference: https://api.norcapsecurities.com/admin_v3/documentation?mid=MjU1
+
+    Args:
+        routing_number (str): Routing number
+
+    Returns:
+        APIResponse
+    """
     payload = APIPayload(
         clientID=CLIENT_ID,
         developerAPIKey=DEVELOPER_API_KEY,

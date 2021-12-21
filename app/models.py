@@ -164,6 +164,14 @@ class Accreditation(BaseModel):
 
     @property
     def accredited(cls) -> bool:
+        """Check if the investor is accredited.
+        According to the SEC, an accredited investor is someone who:
+        - Makes at least $200,000 annually, AND
+        - Has a net worth of at least $1M
+
+        Returns:
+            bool
+        """
         return cls.annual_income >= 200_000 and cls.net_worth >= 1_000_000
 
     @property
