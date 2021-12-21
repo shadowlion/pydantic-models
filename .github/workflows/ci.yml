@@ -25,9 +25,9 @@ jobs:
         pip install poetry
         poetry install
     - name: Lint with flake8
-      run: flake8 . --count --exit-zero --max-complexity=10 --statistics
+      run: poetry run flake8 . --count --exit-zero --max-complexity=10 --statistics
     - name: Test with pytest
-      run: pytest --cov=app __tests__
+      run: poetry run pytest --cov=app __tests__
       env:
         TRANSACT_API_CLIENT_ID: ${{secrets.TRANSACT_API_CLIENT_ID}}
         TRANSACT_API_DEVELOPER_API_KEY: ${{secrets.TRANSACT_API_DEVELOPER_API_KEY}}
