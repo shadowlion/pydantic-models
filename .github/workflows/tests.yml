@@ -19,7 +19,7 @@ jobs:
     - name: Install dependencies
       run: pip install --upgrade pip && pip install pytest
     - name: Test with pytest
-      run: poetry run pytest --cov=app __tests__
+      run: pytest --cov=app __tests__
       env:
         TRANSACT_API_CLIENT_ID: ${{secrets.TRANSACT_API_CLIENT_ID}}
         TRANSACT_API_DEVELOPER_API_KEY: ${{secrets.TRANSACT_API_DEVELOPER_API_KEY}}
