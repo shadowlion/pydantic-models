@@ -18,12 +18,11 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
-      - run: pip install --upgrade pip && pip install flake8
-      - name: flake8
+      - run: pip install --upgrade pip && pip install poetry && poetry install
         uses: liskin/gh-problem-matcher-wrap@v1
         with:
           linters: flake8
-          run: flake8 . --count --exit-zero --max-complexity=10 --statistics
+          run: poetry run flake8 . --count --exit-zero --max-complexity=10 --statistics
 
   isort:
     runs-on: ubuntu-latest
@@ -37,12 +36,12 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
-      - run: pip install --upgrade pip && pip install isort
+      - run: pip install --upgrade pip && pip install poetry && poetry install
       - name: isort
         uses: liskin/gh-problem-matcher-wrap@v1
         with:
           linters: isort
-          run: isort --check --diff app
+          run: poetry run isort --check --diff app
 
   black:
     runs-on: ubuntu-latest
