@@ -1,7 +1,7 @@
 from datetime import date
 from typing import Union
 
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, validator, EmailStr
 
 from app.helpers import (
     CreditCardBrand,
@@ -9,6 +9,12 @@ from app.helpers import (
     spend_pool,
     validate_aba_routing_number,
 )
+
+
+class NewsletterSubscriptionSchema(BaseModel):
+    """Newsletter Subscription Schema"""
+
+    email: EmailStr
 
 
 class CreditCard(BaseModel):
