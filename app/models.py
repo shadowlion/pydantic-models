@@ -1,7 +1,7 @@
 from datetime import date
 from typing import Union
 
-from pydantic import BaseModel, validator, EmailStr
+from pydantic import BaseModel, EmailStr, validator
 
 from app.helpers import (
     CreditCardBrand,
