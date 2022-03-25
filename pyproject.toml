@@ -8,7 +8,7 @@ authors = ["Justin Chiou <chiou.kai@gmail.com>"]
 python = "^3.7"
 pydantic = {extras = ["email"], version = "^1.9.0"}
 requests = "^2.27.1"
-python-dotenv = "^0.19.2"
+python-dotenv = "^0.20.0"
 
 [tool.poetry.dev-dependencies]
 black = "^22.1.0"
