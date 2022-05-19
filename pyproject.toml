@@ -6,7 +6,7 @@ authors = ["Justin Chiou <chiou.kai@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.7"
-pydantic = {extras = ["email"], version = "^1.9.0"}
+pydantic = {extras = ["email"], version = "^1.9.1"}
 requests = "^2.27.1"
 python-dotenv = "^0.20.0"
 
